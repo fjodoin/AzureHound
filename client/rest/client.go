@@ -252,7 +252,8 @@ func (s *restClient) applyDelay() {
 	// Add random jitter between 0.1 and jitter value (in seconds)
 	if s.jitter > 0 {
 		// Generate random value between 0.1 and jitter
-		jitterValue := 0.1 + rand.Float64()*float64(s.jitter-0.1)
+		maxJitter := float64(s.jitter)
+		jitterValue := 0.1 + rand.Float64()*(maxJitter-0.1)
 		if jitterValue < 0.1 {
 			jitterValue = 0.1
 		}
