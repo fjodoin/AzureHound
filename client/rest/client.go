@@ -24,6 +24,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -65,13 +66,15 @@ func NewRestClient(apiUrl string, config config.Config) (RestClient, error) {
 			authenticator = NewGenericAuthenticator(config, auth, api)
 		}
 		client := &restClient{
-			*api,
-			http,
-			config.Tenant,
-			Token{},
-			config.SubscriptionId,
-			config.MgmtGroupId,
-			authenticator,
+			api:           *api,
+			http:          http,
+			tenant:        config.Tenant,
+			token:         Token{},
+			subId:         config.SubscriptionId,
+			mgmtGroupId:   config.MgmtGroupId,
+			Authenticator: authenticator,
+			delay:         config.Delay,
+			jitter:        config.Jitter,
 		}
 		return client, nil
 	}
@@ -85,6 +88,8 @@ type restClient struct {
 	subId         []string
 	mgmtGroupId   []string
 	Authenticator *Authenticator
+	delay         int
+	jitter        int
 }
 
 func (s *restClient) Delete(ctx context.Context, path string, body interface{}, params query.Params, headers map[string]string) (*http.Response, error) {
@@ -191,6 +196,9 @@ func (s *restClient) send(req *http.Request) (*http.Response, error) {
 				req.Body = io.NopCloser(bytes.NewBuffer(body))
 			}
 
+			// Apply delay and jitter before making the request
+			s.applyDelay()
+
 			// Try the request
 			if res, err = s.http.Do(req); err != nil {
 				if IsClosedConnectionErr(err) {
@@ -231,6 +239,28 @@ func (s *restClient) send(req *http.Request) (*http.Response, error) {
 		}
 		return nil, fmt.Errorf("unable to complete the request after %d attempts: %w", maxRetries, err)
 	}
+}
+
+func (s *restClient) applyDelay() {
+	if s.delay == 0 && s.jitter == 0 {
+		return
+	}
+
+	// Start with base delay in seconds
+	totalDelay := float64(s.delay)
+
+	// Add random jitter between 0.1 and jitter value (in seconds)
+	if s.jitter > 0 {
+		// Generate random value between 0.1 and jitter
+		jitterValue := 0.1 + rand.Float64()*float64(s.jitter-0.1)
+		if jitterValue < 0.1 {
+			jitterValue = 0.1
+		}
+		totalDelay += jitterValue
+	}
+
+	// Sleep for the calculated duration
+	time.Sleep(time.Duration(totalDelay * float64(time.Second)))
 }
 
 func (s *restClient) CloseIdleConnections() {

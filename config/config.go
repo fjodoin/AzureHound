@@ -337,6 +337,28 @@ var (
 		MaxValue:   50,
 	}
 
+	ColDelay = Config{
+		Name:       "delay",
+		Shorthand:  "",
+		Usage:      "Base delay in seconds between HTTP requests.",
+		Persistent: true,
+		Required:   false,
+		Default:    0,
+		MinValue:   0,
+		MaxValue:   60,
+	}
+
+	ColJitter = Config{
+		Name:       "jitter",
+		Shorthand:  "",
+		Usage:      "Maximum random jitter in seconds to add to delay (actual jitter will be between 0.1 and this value).",
+		Persistent: true,
+		Required:   false,
+		Default:    0,
+		MinValue:   0,
+		MaxValue:   60,
+	}
+
 	// Command specific configurations
 	KeyVaultAccessTypes = Config{
 		Name:       "access-types",
@@ -396,6 +418,8 @@ var (
 		ColMaxConnsPerHost,
 		ColMaxIdleConnsPerHost,
 		ColStreamCount,
+		ColDelay,
+		ColJitter,
 	}
 )
 

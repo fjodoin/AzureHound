@@ -144,6 +144,8 @@ func newAzureClient() (client.AzureClient, error) {
 		Username:                config.AzUsername.Value().(string),
 		ManagedIdentity:         config.AzUseManagedIdentity.Value().(bool),
 		ManagedIdentityClientId: config.AzManagedIdentityClientId.Value().(string),
+		Delay:                   config.ColDelay.Value().(int),
+		Jitter:                  config.ColJitter.Value().(int),
 	}
 	return client.NewClient(config)
 }

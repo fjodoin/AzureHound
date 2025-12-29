@@ -43,6 +43,8 @@ type Config struct {
 	SubscriptionId          []string // The Subscription Id(s) to use as a filter
 	Tenant                  string   // The directory tenant that you want to request permission from. This can be in GUID or friendly name format
 	Username                string   // The user principal name associated with the Azure portal.
+	Delay                   int      // Base delay in seconds between HTTP requests
+	Jitter                  int      // Maximum random jitter in seconds to add to delay
 }
 
 func AuthorityUrl(region string, defaultUrl string) string {
