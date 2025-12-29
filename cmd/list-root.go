@@ -31,7 +31,9 @@ import (
 )
 
 func init() {
-	config.Init(listRootCmd, append(config.AzureConfig, config.OutputFile))
+	configs := append(config.AzureConfig, config.OutputFile)
+	configs = append(configs, config.CollectionConfig...)
+	config.Init(listRootCmd, configs)
 	rootCmd.AddCommand(listRootCmd)
 }
 
