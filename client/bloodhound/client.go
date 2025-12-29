@@ -14,6 +14,7 @@ import (
 	"sync"
 
 	"github.com/bloodhoundad/azurehound/v2/client/rest"
+	"github.com/bloodhoundad/azurehound/v2/config"
 	"github.com/bloodhoundad/azurehound/v2/constants"
 	"github.com/bloodhoundad/azurehound/v2/models"
 	"github.com/bloodhoundad/azurehound/v2/pipeline"
@@ -182,7 +183,11 @@ func (s *BHEClient) Ingest(ctx context.Context, in <-chan []any) bool {
 			s.log.Error(err, unrecoverableErrMsg)
 			return true
 		} else {
-			req.Header.Set("User-Agent", constants.UserAgent())
+			userAgent := config.UserAgent.Value().(string)
+			if userAgent == "" {
+				userAgent = constants.UserAgent()
+			}
+			req.Header.Set("User-Agent", userAgent)
 			req.Header.Set("Accept", "application/json")
 			req.Header.Set("Content-Encoding", "gzip")
 

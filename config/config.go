@@ -139,6 +139,14 @@ var (
 		Default:    "",
 	}
 
+	UserAgent = Config{
+		Name:       "user-agent",
+		Shorthand:  "",
+		Usage:      "Custom User-Agent string for HTTP requests (default: azurehound/<version>)",
+		Persistent: true,
+		Default:    "",
+	}
+
 	// Azure Configurations
 	AzAppId = Config{
 		Name:       "app",
@@ -385,6 +393,7 @@ var (
 		Proxy,
 		RefreshToken,
 		Pprof,
+		UserAgent,
 	}
 
 	AzureConfig = []Config{

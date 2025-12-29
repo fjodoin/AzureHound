@@ -129,7 +129,11 @@ func NewRequest(
 		}
 
 		// set azurehound as user-agent
-		req.Header.Set("User-Agent", constants.UserAgent())
+		userAgent := config.UserAgent.Value().(string)
+		if userAgent == "" {
+			userAgent = constants.UserAgent()
+		}
+		req.Header.Set("User-Agent", userAgent)
 		return req, nil
 	}
 }
